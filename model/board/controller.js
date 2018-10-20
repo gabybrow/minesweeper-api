@@ -17,7 +17,7 @@ exports.getBoardById = (req, res, next) => {
           as: 'cells'
         }
       ],
-      order: [ [ 'cells', 'row', 'ASC' ], [ 'cells', 'col', 'ASC' ] ]
+      order: [['cells', 'row', 'ASC'], ['cells', 'col', 'ASC']]
     })
     .then(foundBoard => {
       if (!foundBoard) {
@@ -46,7 +46,8 @@ const prepareBoard = (rows, cols) => {
       board[i][j] = {
         row: i,
         col: j,
-        mined: false
+        mined: false,
+        adjacentMines: 0
       };
     }
   }
@@ -80,18 +81,48 @@ const flattenBoard = board => {
   return cells;
 };
 
+
+const countAdjacentMines = (board, rows, cols) => {
+  let cells = flattenBoard(board);
+  cells = cells.map(countAdjacents);
+  function countAdjacents(cell) {
+    if (cell.mined) {
+      cell.adjacentMines = -1;
+      return cell;
+    }
+    let total = 0;
+    for (let xoff = -1; xoff <= 1; xoff++) {
+      for (let yoff = -1; yoff <= 1; yoff++) {
+        const i = cell.row + xoff;
+        const j = cell.col + yoff;
+        if (i > -1 && i < rows && j > -1 && j < cols) {
+          const adjacentCell = board[i][j];
+          if (adjacentCell.mined) {
+            total++;
+          }
+        }
+      }
+    }
+    cell.adjacentMines = total;
+    return cell;
+  }
+  return cells;
+}
+
 exports.create = (req, res, next) => {
   const rows = req.body.rows || parseInt(config.common.board.defaultRows);
   const cols = req.body.cols || parseInt(config.common.board.defaultCols);
   const mines = req.body.mines || parseInt(config.common.board.defaultMines);
+  if (mines >= rows * cols) throw errors.badRequest;
   const minedBoard = insertMines(prepareBoard(rows, cols), rows, cols, mines);
+  const cells = countAdjacentMines(minedBoard, rows, cols);
   return Boards
     .create(
       {
         rows,
         cols,
         mines,
-        cells: flattenBoard(minedBoard)
+        cells
       },
       {
         include: [{ model: Cells, as: 'cells' }]
@@ -108,9 +139,9 @@ const reveal = (board, row, col) => {
 }
 
 const checkCellAvailability = cell => {
-  if (cell.revealed || cell.flag){
+  if (cell.revealed || cell.flag) {
     throw errors.badRequest;
-  } 
+  }
 }
 
 exports.revealCell = (req, res, next) => {

@@ -33,6 +33,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         field: 'board_id',
         allowNull: true
+      },
+      adjacentMines: {
+        type: DataTypes.INTEGER,
+        field: 'adjacent_mines',
+        allowNull: true
       }
     },
     {
