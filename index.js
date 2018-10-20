@@ -8,13 +8,36 @@ const express = require('express'),
   logger = require('./services/logger'),
   initialize = require('./config/init')(),
   cors = require('cors'),
-  errors = require('./model/errors');
+  errors = require('./model/errors')
+  swaggerJSDoc = require('swagger-jsdoc'),
+  swaggerUi = require('swagger-ui-express');
 
 const init = () => {
   const app = express();
   app.use(helmet());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
+
+  const swaggerDefinition = {
+    info: {
+      title: 'Minesweeper API',
+      version: '1.0.0',
+      description: 'Minesweeper API',
+    },
+    host: 'localhost:8080',
+    basePath: '/',
+  };
+  
+  // options for the swagger docs
+  const options = {
+    // import swaggerDefinitions
+    swaggerDefinition: swaggerDefinition,
+    // path to the API docs
+    apis: ['./model/*/router.js'],
+  };
+  
+  // initialize swagger-jsdoc
+  const swaggerSpec = swaggerJSDoc(options);
 
   if (!config.isTesting) {
     morgan.token('req-params', req => req.params);
@@ -26,6 +49,11 @@ const init = () => {
   }
 
   app.use(cors());
+  app.get('/swagger.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+  });
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   app.use('/api', routes);
   app.use(errors.handle);
 

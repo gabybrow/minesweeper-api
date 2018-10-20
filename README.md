@@ -39,3 +39,7 @@ npm start
 ```
 
 And then the app runs on `localhost:8080`
+
+------------------------------------------------------
+
+You can find some basic documentation in `localhost:8080/api-docs`
