@@ -134,8 +134,26 @@ exports.create = (req, res, next) => {
     .catch(next);
 }
 
-const reveal = (board, row, col) => {
+const reveal = (board, row, col, rows, cols) => {
   board[row][col].revealed = true;
+  if (board[row][col].adjacentMines == 0) {
+    revealAdjacentCells(board, row, col, rows, cols);
+  }
+}
+
+const revealAdjacentCells = (board, row, col, rows, cols) => {
+  for (let xoff = -1; xoff <= 1; xoff++) {
+    for (let yoff = -1; yoff <= 1; yoff++) {
+      const i = parseInt(row) + xoff;
+      const j = parseInt(col) + yoff;
+      if (i > -1 && i < rows && j > -1 && j < cols) {
+        const adjacentCell = board[i][j];
+        if (!adjacentCell.mined && !adjacentCell.revealed) {
+          reveal(board, adjacentCell.row, adjacentCell.col, rows, cols);
+        }
+      }
+    }
+  }
 }
 
 const checkCellAvailability = cell => {
@@ -149,8 +167,9 @@ exports.revealCell = (req, res, next) => {
   const col = req.params.col;
   const board = _.groupBy(req.board.cells, cell => cell.row);
   checkCellAvailability(board[row][col]);
-  reveal(board, row, col)
-  if (board[row][col].mined) {
+  reveal(board, row, col, req.board.rows, req.board.cols);
+  const affectedCells = flattenBoard(board).filter(cell => cell.revealed);
+  if (affectedCells.length == 1 && affectedCells[0].mined) {
     return Boards
       .update({ status: 'lost' }, { where: { id: req.board.id } })
       .then(lostBoard => {
@@ -159,14 +178,18 @@ exports.revealCell = (req, res, next) => {
         });
       }).catch(next)
   } else {
-    return Cells.update({ revealed: true }, {
-      where: {
-        boardId: req.board.id,
-        row,
-        col
-      }
-    }).then(() => {
-      res.sendStatus(200);
-    }).catch(next)
+    affectedCells.map(cell => {
+      return Cells.update({ revealed: true }, {
+        where: {
+          boardId: req.board.id,
+          row: cell.row,
+          col: cell.col
+        }
+      });
+    });
+    Promise.all(affectedCells)
+      .then(() => {
+        res.sendStatus(200);
+      }).catch(next)
   }
 } 
