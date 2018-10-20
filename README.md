@@ -16,6 +16,9 @@ DB_PORT=5432
 DB_NAME=minesweeper
 DB_USERNAME=postgres
 DB_PASSWORD=postgres
+DEFAULT_ROWS=8
+DEFAULT_COLS=8
+DEFAULT_MINES=10
 ```
 
 Once added the env variables, just for the first time, you will need to run on the root directory the following commands.
