@@ -23,6 +23,7 @@
     "pg": "^7.4.1",
     "pg-hstore": "^2.3.2",
     "pg-structure": "^4.0.1",
+    "request-promise": "^4.2.2",
     "sequelize": "^4.37.6",
     "sequelize-cli": "^4.0.0",
     "umzug": "^2.1.0",
