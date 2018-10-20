@@ -1,0 +1,8 @@
+{
+  "generator-api": {
+    "promptValues": {
+      "authorName": "minesweeper",
+      "authorEmail": "gabrielbrowar@gmail.com"
+    }
+  }
+}
