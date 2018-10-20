@@ -20,9 +20,28 @@ const prepareBoard = (rows, cols) => {
       board[i][j] = {
         row: i,
         col: j,
-        mine: false
+        mined: false
       };
     }
+  }
+  return board;
+}
+
+const insertMines = (board, rows, cols, mines) => {
+  const options = [];
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      options.push([i, j]);
+    }
+  }
+  for (let n = 0; n < mines; n++) {
+    const index = Math.floor(Math.random(rows) * options.length);
+    const choice = options[index];
+    const i = choice[0];
+    const j = choice[1];
+    // Deletes that spot so it's no longer an option
+    options.splice(index, 1);
+    board[i][j].mined = true;
   }
   return board;
 }
@@ -39,18 +58,19 @@ exports.create = (req, res, next) => {
   const rows = req.body.rows || parseInt(config.common.board.defaultRows);
   const cols = req.body.cols || parseInt(config.common.board.defaultCols);
   const mines = req.body.mines || parseInt(config.common.board.defaultMines);
-  const basicBoard = prepareBoard(rows, cols);
+  const minedBoard = insertMines(prepareBoard(rows, cols), rows, cols, mines);
   return Boards
-    .create({
-      rows,
-      cols,
-      mines,
-      cells: flattenBoard(basicBoard)
-    }, {
-      include: [
-        { model: Cells, as: 'cells' }
-      ]
-      })
+    .create(
+      {
+        rows,
+        cols,
+        mines,
+        cells: flattenBoard(minedBoard)
+      },
+      {
+        include: [{ model: Cells, as: 'cells' }]
+      }
+    )
     .then(createdBoard => {
       res.status(201).json(createdBoard);
     })
