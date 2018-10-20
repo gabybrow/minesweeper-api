@@ -16,10 +16,11 @@ exports.getBoardById = (req, res, next) => {
           model: Cells,
           as: 'cells'
         }
-      ]
+      ],
+      order: [ [ 'cells', 'row', 'ASC' ], [ 'cells', 'col', 'ASC' ] ]
     })
     .then(foundBoard => {
-      if(!foundBoard){
+      if (!foundBoard) {
         throw errors.notFound;
       }
       req.board = foundBoard;
@@ -101,3 +102,40 @@ exports.create = (req, res, next) => {
     })
     .catch(next);
 }
+
+const reveal = (board, row, col) => {
+  board[row][col].revealed = true;
+}
+
+const checkCellAvailability = cell => {
+  if (cell.revealed || cell.flag){
+    throw errors.badRequest;
+  } 
+}
+
+exports.revealCell = (req, res, next) => {
+  const row = req.params.row;
+  const col = req.params.col;
+  const board = _.groupBy(req.board.cells, cell => cell.row);
+  checkCellAvailability(board[row][col]);
+  reveal(board, row, col)
+  if (board[row][col].mined) {
+    return Boards
+      .update({ status: 'lost' }, { where: { id: req.board.id } })
+      .then(lostBoard => {
+        res.status(200).json({
+          message: 'Oh no! You lost!'
+        });
+      }).catch(next)
+  } else {
+    return Cells.update({ revealed: true }, {
+      where: {
+        boardId: req.board.id,
+        row,
+        col
+      }
+    }).then(() => {
+      res.sendStatus(200);
+    }).catch(next)
+  }
+} 
