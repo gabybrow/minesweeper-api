@@ -15,9 +15,13 @@ router
   .route('/:id/row/:row/col/:col/reveal')
   .post((...args) => boardController.revealCell(...args));
 
-// router
-//   .route('/:id/row/:row/col/:col/flag')
-//   .post((...args) => boardController.flagCell(...args));
+router
+  .route('/:id/row/:row/col/:col/flag')
+  .post((...args) => boardController.flagCell(...args));
+
+router
+  .route('/:id/row/:row/col/:col/unflag')
+  .post((...args) => boardController.unflagCell(...args));
 
 router.param('id', (...args) => boardController.getBoardById(...args));
 

@@ -106,4 +106,42 @@ exports.revealCell = (req, res, next) => {
         }
       }).catch(next)
   }
-} 
+}
+
+exports.flagCell = (req, res, next) => {
+  const row = req.params.row;
+  const col = req.params.col;
+  const board = _.groupBy(req.board.cells, cell => cell.row);
+  helper.checkCellAvailability(board[row][col]);
+  return Cells.update({ flag: true }, {
+    where: {
+      boardId: req.board.id,
+      row: cell.row,
+      col: cell.col
+    }
+  })
+    .then(() => {
+      res.sendStatus(200);
+    })
+    .catch(next);
+}
+
+exports.unflagCell = (req, res, next) => {
+  const row = req.params.row;
+  const col = req.params.col;
+  const board = _.groupBy(req.board.cells, cell => cell.row);
+  if (board[row][col].revealed || !board[row][col].flag) {
+    throw errors.badRequest;
+  }
+  return Cells.update({ flag: false }, {
+    where: {
+      boardId: req.board.id,
+      row: cell.row,
+      col: cell.col
+    }
+  })
+    .then(() => {
+      res.sendStatus(200);
+    })
+    .catch(next);
+}
