@@ -26,7 +26,7 @@ const init = () => {
   }
 
   app.use(cors());
-  app.use(routes);
+  app.use('/api', routes);
   app.use(errors.handle);
 
   module.exports = app;
