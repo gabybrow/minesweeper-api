@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
-  const Board = sequelize.define(
-    'board',
+  const Cell = sequelize.define(
+    'cell',
     {
       id: {
         type: DataTypes.INTEGER,
@@ -9,27 +9,30 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true
       },
-      rows: {
+      row: {
         type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      col: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+      },
+      revealed: {
+        type: DataTypes.BOOLEAN,
         allowNull: true
       },
-      cols: {
-        type: DataTypes.INTEGER,
+      mined: {
+        type: DataTypes.BOOLEAN,
         allowNull: true
       },
-      mines: {
-        type: DataTypes.INTEGER,
+      flag: {
+        type: DataTypes.BOOLEAN,
         allowNull: true
       },
-      status: {
-        type: DataTypes.ENUM,
-        values: ['started', 'won', 'lost'],
-        defaultValue: 'started'
-      },
-      createdAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: 'created_at'
+      boardId: {
+        type: DataTypes.INTEGER,
+        field: 'board_id',
+        allowNull: true
       }
     },
     {
@@ -40,9 +43,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  Board.associate = models => {
-    Board.hasMany(models.cell);
+  Cell.associate = models => {
+    Cell.belongsTo(models.board);
   }
 
-  return Board;
+  return Cell;
 };
