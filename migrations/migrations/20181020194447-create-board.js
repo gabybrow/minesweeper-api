@@ -9,18 +9,15 @@ module.exports = {
       },
       rows: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 8
+        allowNull: false
       },
       cols: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 8
+        allowNull: false
       },
       mines: {
         type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 10
+        allowNull: false
       },
       status: {
         type: Sequelize.ENUM('started', 'won', 'lost'),

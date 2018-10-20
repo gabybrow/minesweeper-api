@@ -4,6 +4,7 @@ const Router = require('express').Router,
 
 router
   .route('/')
-  .get((...args) => boardController.find(...args));
+  .get((...args) => boardController.find(...args))
+  .post((...args) => boardController.create(...args));
 
 module.exports = router;

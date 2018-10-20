@@ -39,6 +39,11 @@ const config = {
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       dialect: 'postgres'
+    },
+    board: {
+      defaultRows: process.env.DEFAULT_ROWS,
+      defaultCols: process.env.DEFAULT_COLS,
+      defaultMines: process.env.DEFAULT_MINES
     }
   }
 };

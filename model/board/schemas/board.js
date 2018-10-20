@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Board.associate = models => {
-    Board.hasMany(models.cell);
+    Board.hasMany(models.cell, { as: 'cells' });
   }
 
   return Board;
