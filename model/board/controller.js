@@ -187,9 +187,20 @@ exports.revealCell = (req, res, next) => {
         }
       });
     });
+    if (affectedCells.length == (req.board.rows * req.board.cols) - req.board.mines) {
+      affectedCells.push(
+        Boards.update({ status: 'won' },
+          { where: { id: req.board.id }, returning: true }));
+    }
     Promise.all(affectedCells)
-      .then(() => {
-        res.sendStatus(200);
+      .then(results => {
+        if (results[results.length - 1][1][0].status) {
+          res.status(200).json({
+            message: 'you won!'
+          })
+        } else {
+          res.sendStatus(200);
+        }
       }).catch(next)
   }
 } 
