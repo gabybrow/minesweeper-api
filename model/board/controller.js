@@ -1,7 +1,32 @@
 const Boards = require('../../model').board,
   Cells = require('../../model').cell,
   config = require('../../config'),
+  errors = require('../../services/errors'),
   _ = require('lodash');
+
+exports.findById = (req, res, next) => {
+  res.status(200).send(req.board);
+}
+
+exports.getBoardById = (req, res, next) => {
+  return Boards
+    .findById(req.params.id, {
+      include: [
+        {
+          model: Cells,
+          as: 'cells'
+        }
+      ]
+    })
+    .then(foundBoard => {
+      if(!foundBoard){
+        throw errors.notFound;
+      }
+      req.board = foundBoard;
+      next();
+    })
+    .catch(next);
+}
 
 exports.find = (req, res, next) => {
   return Boards
