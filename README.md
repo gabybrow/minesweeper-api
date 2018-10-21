@@ -41,5 +41,8 @@ npm start
 And then the app runs on `localhost:8080`
 
 ------------------------------------------------------
+## Heroku
 
-You can find some basic documentation in `localhost:8080/api-docs`
+The API is deployed in https://shrouded-lake-61583.herokuapp.com
+
+You can find some basic documentation in `https://shrouded-lake-61583.herokuapp.com/api-docs`
