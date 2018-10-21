@@ -43,24 +43,20 @@ const Router = require('express').Router,
  *     produces:
  *       - application/json
  *     parameters:
- *       - name: rows
- *         description: Rows for the board
- *         in: body
- *         required: false
- *         type: integer
- *         example: 8
- *       - name: cols
- *         description: Columns for the board
- *         in: body
- *         required: false
- *         type: integer
- *         example: 8
- *       - name: mines
- *         description: Mines for the board
- *         in: body
- *         required: false
- *         type: integer
- *         example: 10
+ *       - in: body
+ *         description: The Board to create.
+ *         schema:
+ *           type: object
+ *           properties:
+ *             rows:
+ *               type: integer
+ *               example: 8
+ *             cols:
+ *               type: integer
+ *               example: 8
+ *             mines:
+ *               type: integer
+ *               example: 10
  *     responses:
  *       201:
  *         description: Successfully created

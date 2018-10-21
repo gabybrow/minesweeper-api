@@ -24,7 +24,7 @@ const init = () => {
       version: '1.0.0',
       description: 'Minesweeper API',
     },
-    host: 'localhost:8080',
+    host: process.env.HOST || 'localhost:8080',
     basePath: '/',
   };
   
