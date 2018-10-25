@@ -116,8 +116,8 @@ exports.flagCell = (req, res, next) => {
   return Cells.update({ flag: true }, {
     where: {
       boardId: req.board.id,
-      row: cell.row,
-      col: cell.col
+      row,
+      col
     }
   })
     .then(() => {
@@ -136,8 +136,8 @@ exports.unflagCell = (req, res, next) => {
   return Cells.update({ flag: false }, {
     where: {
       boardId: req.board.id,
-      row: cell.row,
-      col: cell.col
+      row: row,
+      col: col
     }
   })
     .then(() => {
